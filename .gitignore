@@ -5,3 +5,8 @@ __pycache__/
 .env.local
 try_db.py
 t.py
+try_loaders.py
+rooms.json
+students.json
+try_queries.py
+try_export.py
