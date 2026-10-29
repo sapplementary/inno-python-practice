@@ -10,3 +10,6 @@ rooms.json
 students.json
 try_queries.py
 try_export.py
+try_*.py
+result.json
+result.xml
