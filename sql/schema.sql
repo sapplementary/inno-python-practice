@@ -1,12 +1,12 @@
-create table rooms (
-	id int primary key,
-	name varchar(50) not null 
-)
+CREATE TABLE IF NOT EXISTS rooms (
+    id   INTEGER PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
 
-create table students(
-	id int primary key,
-	name varchar(120) not null,
-	birthday date not null,
-	sex char(1) not null check (sex in ('M', 'F')),
-	room_id int not null references rooms(id)
-)
+CREATE TABLE IF NOT EXISTS students (
+    id       INTEGER PRIMARY KEY,
+    name     VARCHAR(200) NOT NULL,
+    birthday DATE NOT NULL,
+    sex      CHAR(1) NOT NULL CHECK (sex IN ('M', 'F')),
+    room_id  INTEGER NOT NULL REFERENCES rooms (id)
+);
