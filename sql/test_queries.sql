@@ -1,26 +1,45 @@
 -- the 1st test query
-select r.id, r.name, count(s.id) as count_students
-from rooms r
-left join students s on s.room_id = r.id 
-group by r.id, r.name
+SELECT   r.id,
+         r.name,
+         Count(s.id) AS count_students
+FROM     rooms r
+         LEFT JOIN students s
+         ON s.room_id = r.id
+GROUP BY r.id,
+         r.name
+order by r.id;
 
 -- the 2nd test query
-select r.id , r.name, avg(extract(year from age(s.birthday))) as avg_age
-from rooms r
-join students s on s.room_id = r.id
-group by r.id , r.name
+
+SELECT   r.id,
+         r.name,
+         ROUND(AVG(CURRENT_DATE - s.birthday) / 365.25, 2) AS avg_age_years
+FROM     rooms r
+         JOIN students s
+         ON s.room_id = r.id
+GROUP BY r.id,
+         r.name
+LIMIT 5;
 
 --the 3rd test query
-select r.id , r.name, max(extract(year from age(s.birthday)))
-					- min(extract(year from age(s.birthday))) as age_diff
-from rooms r
-join students s on s.room_id = r.id
-group by r.id , r.name
-limit 5
+
+SELECT   r.id,
+         r.name,
+         (MAX(s.birthday) - MIN(s.birthday)) / 365.25, 2 AS age_diff_years
+FROM     rooms r
+         JOIN students s
+         ON s.room_id = r.id
+GROUP BY r.id,
+         r.name
+LIMIT 5;
 
 -- the 4th test query
-select r.id, r.name
-from rooms r 
-join students s ON s.room_id = r.id
-group by r.id, r.name
-having COUNT(DISTINCT s.sex) > 1
+
+SELECT   r.id,
+         r.name
+FROM     rooms r
+         JOIN students s
+         ON s.room_id = r.id
+GROUP BY r.id,
+         r.name
+HAVING   Count(DISTINCT s.sex) > 1;

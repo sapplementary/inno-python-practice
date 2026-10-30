@@ -2,6 +2,13 @@ import os
 from dataclasses import dataclass
 
 
+def _require_env(name: str) -> str:
+    value = os.getenv(name)
+    if not value:
+        raise RuntimeError(f"Не задана переменная окружения {name}")
+    return value
+
+
 @dataclass(frozen=True)
 class DbConfig:
     host: str
@@ -13,9 +20,9 @@ class DbConfig:
     @classmethod
     def from_env(cls) -> "DbConfig":
         return cls(
-            host=os.getenv("DB_HOST", "localhost"),
-            port=int(os.getenv("DB_PORT", "5432")),
-            dbname=os.getenv("DB_NAME", "students_rooms"),
-            user=os.getenv("DB_USER", "postgres"),
-            password=os.getenv("DB_PASSWORD", "postgres"),
+            host=_require_env("DB_HOST"),
+            port=int(_require_env("DB_PORT")),
+            dbname=_require_env("DB_NAME"),
+            user=_require_env("DB_USER"),
+            password=_require_env("DB_PASSWORD"),
         )
