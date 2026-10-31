@@ -6,10 +6,9 @@ __pycache__/
 try_db.py
 t.py
 try_loaders.py
-rooms.json
-students.json
 try_queries.py
 try_export.py
 try_*.py
 result.json
 result.xml
+output/
