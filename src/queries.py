@@ -1,6 +1,10 @@
+import time
 from pathlib import Path
+import logging
 
 from src.db.connection import DataBaseConnection
+
+logger = logging.getLogger(__name__)
 
 QUERIES_DIR = Path(__file__).resolve().parent.parent / "sql" / "queries"
 
@@ -29,8 +33,12 @@ class QueryService:
             "largest_age_diff_rooms": self.largest_age_diff_rooms(),
             "mixed_sex_rooms": self.mixed_sex_rooms(),
         }
-
+    
     def _run(self, filename: str) -> list[dict]:
         sql = (self._queries_dir / filename).read_text(encoding="utf-8")
-        return self._db.fetch_all(sql)
+        start = time.perf_counter()
+        rows = self._db.fetch_all(sql)
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        logger.info("Запрос %s: %d строк за %.1f мс", filename, len(rows), elapsed_ms)
+        return rows
 

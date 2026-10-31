@@ -1,3 +1,4 @@
+import logging
 from typing import Iterable
 
 from psycopg2.extras import execute_values
@@ -5,6 +6,7 @@ from psycopg2.extras import execute_values
 from src.db.connection import DataBaseConnection
 from src.models import Room, Student
 
+logger = logging.getLogger(__name__)
 
 class RoomRepository:
     def __init__(self, db: DataBaseConnection) -> None:
@@ -19,6 +21,8 @@ class RoomRepository:
         """
         with self._db.cursor() as cur:
             execute_values(cur, sql, rows)
+            logger.info("Загружено комнат: %d", len(rows))
+            logger.info("Загружено студентов: %d", len(rows))
 
 
 class StudentRepository:
@@ -41,3 +45,5 @@ class StudentRepository:
         """
         with self._db.cursor() as cur:
             execute_values(cur, sql, rows)
+            logger.info("Загружено комнат: %d", len(rows))
+            logger.info("Загружено студентов: %d", len(rows))

@@ -1,3 +1,4 @@
+import logging
 from contextlib import contextmanager
 from typing import Any, Iterator, Optional, Sequence
 
@@ -6,6 +7,7 @@ from psycopg2.extras import RealDictCursor
 
 from src.config import DbConfig
 
+logger = logging.getLogger(__name__)
 
 class DataBaseConnection:
     def __init__(self, config: DbConfig) -> None:
@@ -13,6 +15,10 @@ class DataBaseConnection:
         self._conn = None
 
     def __enter__(self) -> "DataBaseConnection":
+        logger.debug(
+            "Подключение к БД %s:%s/%s",
+            self._config.host, self._config.port, self._config.dbname,
+        )
         self._conn = psycopg2.connect(
             host=self._config.host,
             port=self._config.port,
@@ -20,17 +26,21 @@ class DataBaseConnection:
             user=self._config.user,
             password=self._config.password,
         )
+        logger.info("Соединение с БД установлено")
         return self
-
-    def __exit__(self, exc_type, exc_value, tb) -> bool:
+    
+    def __exit__(self, exc_type, exc, tb) -> bool:
         try:
             if exc_type is None:
                 self._conn.commit()
+                logger.info("Транзакция зафиксирована (commit)")
             else:
                 self._conn.rollback()
+                logger.warning("Транзакция откатена (rollback)")
         finally:
             self._conn.close()
             self._conn = None
+            logger.debug("Соединение закрыто")
         return False
 
     @contextmanager

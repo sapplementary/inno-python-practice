@@ -1,4 +1,5 @@
 import argparse
+import logging
 import sys
 from pathlib import Path
 
@@ -9,6 +10,9 @@ from src.config import DbConfig
 from src.db.connection import DataBaseConnection
 from src.exporters.factory import ExporterFactory
 from src.loaders.json_loader import JsonLoader
+from src.logging_config import setup_logging
+
+logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
@@ -39,6 +43,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--output",
         help="файл для результата (по умолчанию: output/result.<формат>)",
     )
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="уровень логирования (по умолчанию: %(default)s)",
+    )
     return parser
 
 
@@ -50,6 +60,8 @@ def resolve_output_path(output: str | None, fmt: str) -> Path:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    setup_logging(args.log_level)
+    logger.info("Запуск: формат результата %s", args.format)
     try:
         app = Application(
             db=DataBaseConnection(DbConfig.from_env()),
@@ -62,10 +74,10 @@ def main(argv: list[str] | None = None) -> int:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(result, encoding="utf-8")
     except (RuntimeError, ValueError, OSError, psycopg2.Error) as e:
-        print(f"Ошибка: {e}", file=sys.stderr)
+        logger.error("Ошибка: %s", e, exc_info=args.log_level == "DEBUG")
         return 1
 
-    print(f"Результат записан в {output_path}")
+    logger.info("Результат записан в %s", output_path)
     return 0
 
 
