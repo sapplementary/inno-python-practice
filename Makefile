@@ -6,7 +6,19 @@ ENV_FILE  := .env.local
 FORMAT    ?= json
 LOG_LEVEL ?= INFO
 
-.PHONY: help install test run clean
+.PHONY: help install test run clean up down reset
+
+COMPOSE := docker compose -f docker/docker-compose.yml --env-file $(ENV_FILE)
+
+up: ## Всё в Docker: make up FORMAT=json|xml
+	@test -f $(ENV_FILE) || { echo "Нет файла $(ENV_FILE): выполните cp .env.example $(ENV_FILE) и заполните его"; exit 1; }
+	FORMAT=$(FORMAT) $(COMPOSE) up --build --abort-on-container-exit --exit-code-from app
+
+down: ## Остановить контейнеры
+	$(COMPOSE) down
+
+reset: ## Остановить контейнеры и удалить данные БД
+	$(COMPOSE) down -v
 
 help: ## Показать список команд
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-10s %s\n", $$1, $$2}'

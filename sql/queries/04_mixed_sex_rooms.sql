@@ -5,4 +5,4 @@ FROM     rooms r
          ON s.room_id = r.id
 GROUP BY r.id,
          r.name
-HAVING   Count(DISTINCT s.sex) > 1
+HAVING   Count(DISTINCT s.sex) > 1;

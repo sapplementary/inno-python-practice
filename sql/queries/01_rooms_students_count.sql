@@ -6,4 +6,4 @@ FROM     rooms r
          ON s.room_id = r.id
 GROUP BY r.id,
          r.name
-order by r.id
+ORDER BY r.id;

@@ -12,3 +12,4 @@ try_*.py
 result.json
 result.xml
 output/
+.pytest_cache/

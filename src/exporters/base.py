@@ -1,7 +1,21 @@
+"""Контракт экспортёров результата.
+
+Определяет абстрактный класс ``Exporter``. Приложение работает только с ним,
+поэтому новый формат вывода добавляется новым подклассом.
+"""
 from abc import ABC, abstractmethod
 
 
 class Exporter(ABC):
-    @abstractmethod
-    def export(self, data: dict[str, list[dict]]) -> str: ...
+    """Абстрактный экспортёр: превращает результат запросов в текст."""
 
+    @abstractmethod
+    def export(self, data: dict[str, list[dict]]) -> str:
+        """Сериализует результат запросов.
+
+        Args:
+            data: Словарь «название запроса: строки результата».
+
+        Returns:
+            Текст в формате конкретного экспортёра.
+        """

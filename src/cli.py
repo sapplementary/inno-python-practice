@@ -1,3 +1,10 @@
+"""Точка входа: командная строка приложения.
+
+Запуск из корня проекта: ``python3 -m src.cli --format json``.
+Здесь разбираются параметры, создаются конкретные объекты (соединение,
+загрузчик, экспортёр) и передаются в ``Application``. Код возврата:
+0 при успехе, 1 при известной ошибке, 2 при неверных параметрах.
+"""
 import argparse
 import logging
 import sys
@@ -20,6 +27,12 @@ OUTPUT_DIR = PROJECT_ROOT / "output"
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Создаёт разборщик параметров командной строки.
+
+    Returns:
+        Разборщик с параметрами ``--format`` (обязательный), ``--rooms``,
+        ``--students``, ``--output`` и ``--log-level``.
+    """
     parser = argparse.ArgumentParser(
         description="Загружает студентов и комнаты в PostgreSQL и выгружает результаты запросов."
     )
@@ -53,12 +66,34 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def resolve_output_path(output: str | None, fmt: str) -> Path:
+    """Определяет, куда записать результат.
+
+    Args:
+        output: Путь, заданный пользователем, или None.
+        fmt: Формат результата (``json`` или ``xml``).
+
+    Returns:
+        Путь пользователя, если он задан, иначе ``output/result.<формат>``.
+    """
     if output:
         return Path(output)
     return OUTPUT_DIR / f"result.{fmt}"
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Запускает приложение.
+
+    Известные ошибки (нет переменной окружения, нет файла, неверный формат,
+    ошибка БД) логируются одной строкой и не показываются трейсбэком,
+    кроме режима ``--log-level DEBUG``. При неверных параметрах argparse
+    сам завершает программу с кодом 2.
+
+    Args:
+        argv: Список параметров; если None, берутся параметры командной строки.
+
+    Returns:
+        Код возврата: 0 при успехе, 1 при ошибке.
+    """
     args = build_parser().parse_args(argv)
     setup_logging(args.log_level)
     logger.info("Запуск: формат результата %s", args.format)

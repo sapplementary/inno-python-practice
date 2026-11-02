@@ -45,7 +45,7 @@ make up FORMAT=xml      # результат в формате XML
 Без Makefile то же самое делает команда:
 
 ```bash
-FORMAT=json docker compose --env-file .env.local up --build --abort-on-container-exit --exit-code-from app
+FORMAT=json docker compose -f docker/docker-compose.yml --env-file .env.local up --build --abort-on-container-exit --exit-code-from app
 ```
 
 Остановка и полная очистка данных БД:
@@ -275,6 +275,7 @@ make test
 
 ```
 data/                 входные файлы (rooms.json, students.json)
+docker/               Dockerfile, docker-compose.yml, Dockerfile.dockerignore
 output/               результаты запусков (не хранится в git)
 sql/
   schema.sql          таблицы
